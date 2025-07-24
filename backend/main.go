@@ -62,6 +62,7 @@ func main() {
 	itemSalesHandler := handler.NewItemSalesHandler(posAdapter)
 	dashboardAIAnalytics := handler.NewDashboardAIHandler(posAdapter)
 	addItemHandler := handler.NewAddItemHandler(posAdapter)
+	chatbotHandler := handler.NewChatbotHandler(posAdapter)
 
 	// Routes
 	r.GET("/", func(c *gin.Context) {
@@ -85,6 +86,8 @@ func main() {
 		api.POST("/items/upload-csv", addItemHandler.AddItemsFromCSV)
 		api.POST("/items/add-single-item", addItemHandler.AddSingleItem)
 		api.GET("/items/csv-template", addItemHandler.GetCSVTemplate)
+
+		api.POST("/chat", chatbotHandler.Chat)
 	}
 
 	// Start server on port 8080
