@@ -54,7 +54,7 @@ func (h *AddItemHandler) AddItemsFromCSV(c *gin.Context) {
 	reader := csv.NewReader(file)
 	reader.FieldsPerRecord = -1 // Allow variable number of fields
 
-	var addedItems []model.Item
+	var validItems []model.Item
 	var skippedItems []SkippedItem
 	var errors []string
 	rowNumber := 0
@@ -125,7 +125,21 @@ func (h *AddItemHandler) AddItemsFromCSV(c *gin.Context) {
 			continue
 		}
 
-		addedItems = append(addedItems, *item)
+		validItems = append(validItems, *item)
+	}
+
+	// Save valid items to database
+	var addedItems []model.Item
+	for _, item := range validItems {
+		if err := h.posAdapter.AddItem(item); err != nil {
+			skippedItems = append(skippedItems, SkippedItem{
+				Row:    -1, // Database error, not tied to specific row
+				Reason: "Database error: " + err.Error(),
+				Data:   fmt.Sprintf("ID: %s, Name: %s", item.ID, item.Name),
+			})
+		} else {
+			addedItems = append(addedItems, item)
+		}
 	}
 
 	// Prepare response
@@ -152,6 +166,32 @@ func (h *AddItemHandler) AddItemsFromCSV(c *gin.Context) {
 	} else {
 		c.JSON(http.StatusOK, response)
 	}
+}
+
+func (h *AddItemHandler) AddSingleItem(c *gin.Context) {
+	var item model.Item
+
+	if err := c.ShouldBindJSON(&item); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON format: " + err.Error()})
+		return
+	}
+
+	// Validate item
+	if err := h.validateItem(&item); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Validation error: " + err.Error()})
+		return
+	}
+
+	// Save to database
+	if err := h.posAdapter.AddItem(item); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to add item to database: " + err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{
+		"message": "Item added successfully",
+		"item":    item,
+	})
 }
 
 func (h *AddItemHandler) parseItemFromRecord(record []string, headerMap map[string]int, rowNumber int) (*model.Item, error) {
@@ -239,26 +279,6 @@ func (h *AddItemHandler) validateItem(item *model.Item) error {
 			item.ProductionPrice, item.Price)
 	}
 	return nil
-}
-
-func (h *AddItemHandler) AddSingleItem(c *gin.Context) {
-	var item model.Item
-
-	if err := c.ShouldBindJSON(&item); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON format: " + err.Error()})
-		return
-	}
-
-	// Validate item
-	if err := h.validateItem(&item); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Validation error: " + err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusCreated, gin.H{
-		"message": "Item added successfully",
-		"item":    item,
-	})
 }
 
 func (h *AddItemHandler) GetCSVTemplate(c *gin.Context) {
