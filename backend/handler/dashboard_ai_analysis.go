@@ -97,11 +97,18 @@ func (h *DashboardAIHandler) GetDashboardAIAnalysis(c *gin.Context) {
 	totalSalesYTD := 0
 	totalRevenueYTD := 0.0
 	totalProductionCost := 0.0
+	monthlySales := make(map[string]int) // month -> total items sold
 
 	for _, order := range orders {
 		totalRevenueYTD += order.Total
+
+		// Get month key for monthly breakdown
+		monthKey := order.CompletedAt.Format("2006-01")
+
 		for _, orderItem := range order.Items {
 			totalSalesYTD += orderItem.Quantity
+			monthlySales[monthKey] += orderItem.Quantity
+
 			if item, exists := itemMap[orderItem.ItemID]; exists {
 				// Calculate production cost
 				itemProductionCost := float64(orderItem.Quantity) * item.ProductionPrice
@@ -122,6 +129,9 @@ func (h *DashboardAIHandler) GetDashboardAIAnalysis(c *gin.Context) {
 			}
 		}
 	}
+
+	// Convert monthly sales to ordered array
+	monthlySalesArray := h.generateMonthlySalesArray(monthlySales, currentYear)
 
 	// Calculate clean profit and cashflow status
 	cleanProfit := totalRevenueYTD - totalProductionCost
@@ -147,8 +157,8 @@ func (h *DashboardAIHandler) GetDashboardAIAnalysis(c *gin.Context) {
 		topItems = topItems[:5]
 	}
 
-	// Prepare content for AI
-	content := h.prepareAIContent(topItems, totalSalesYTD, totalRevenueYTD, location)
+	// Prepare content for AI (include monthly sales)
+	content := h.prepareAIContent(topItems, totalSalesYTD, totalRevenueYTD, monthlySalesArray, cleanProfit, profitMargin, location)
 
 	// Get AI analysis
 	analysis, err := h.getAIAnalysis(content)
@@ -161,6 +171,7 @@ func (h *DashboardAIHandler) GetDashboardAIAnalysis(c *gin.Context) {
 	response := gin.H{
 		"top_selling_items": topItems,
 		"total_sales_ytd":   totalSalesYTD,
+		"monthly_sales":     monthlySalesArray,
 		"total_revenue_ytd": totalRevenueYTD,
 		"business_location": location,
 		"year":              currentYear,
@@ -171,10 +182,36 @@ func (h *DashboardAIHandler) GetDashboardAIAnalysis(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
-func (h *DashboardAIHandler) prepareAIContent(topItems []ItemSales, totalSalesYTD int, totalRevenueYTD float64, location string) string {
+func (h *DashboardAIHandler) generateMonthlySalesArray(monthlySales map[string]int, year int) []map[string]interface{} {
+	var salesArray []map[string]interface{}
+
+	// Generate array for all 12 months
+	for month := 1; month <= 12; month++ {
+		monthKey := fmt.Sprintf("%d-%02d", year, month)
+		sales := monthlySales[monthKey] // will be 0 if no sales for that month
+
+		salesArray = append(salesArray, map[string]interface{}{
+			"month":      fmt.Sprintf("%02d", month),
+			"month_name": time.Month(month).String(),
+			"year":       year,
+			"sales":      sales,
+		})
+	}
+
+	return salesArray
+}
+
+func (h *DashboardAIHandler) prepareAIContent(topItems []ItemSales, totalSalesYTD int, totalRevenueYTD float64, monthlySales []map[string]interface{}, cleanProfit, profitMargin float64, location string) string {
 	content := fmt.Sprintf("Business Location: %s\n\n", location)
 	content += fmt.Sprintf("Total Sales Year-to-Date (YTD): %d items sold\n\n", totalSalesYTD)
+	content += "Monthly Sales Breakdown (items sold):\n"
+	for _, monthData := range monthlySales {
+		content += fmt.Sprintf("%s %d: %d items\n",
+			monthData["month_name"], monthData["year"], monthData["sales"])
+	}
+	content += "\n"
 	content += fmt.Sprintf("Total Revenue This Year: $%.2f\n\n", totalRevenueYTD)
+	content += fmt.Sprintf("Clean Profit This Year: $%.2f (%.2f%% margin)\n\n", cleanProfit, profitMargin)
 
 	content += "Top 5 Best-Selling Items:\n"
 	for i, item := range topItems {
