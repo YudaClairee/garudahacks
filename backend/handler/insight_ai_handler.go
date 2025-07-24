@@ -82,8 +82,10 @@ func NewInsightAIHandler(posAdapter model.POSAdapter) *InsightAIHandler {
 }
 
 func (h *InsightAIHandler) GetBusinessInsights(c *gin.Context) {
-	// Get current year
-	currentYear := time.Now().Year()
+	// Get current year and month
+	now := time.Now()
+	currentYear := now.Year()
+	currentMonth := int(now.Month())
 	startOfYear := time.Date(currentYear, 1, 1, 0, 0, 0, 0, time.UTC)
 
 	// Get all orders for the year
@@ -124,9 +126,9 @@ func (h *InsightAIHandler) GetBusinessInsights(c *gin.Context) {
 		}
 	}
 
-	// Convert to ordered array of monthly revenues
+	// Convert to ordered array of monthly revenues (only up to current month)
 	var monthlyRevenueArray []MonthlyRevenue
-	for month := 1; month <= 12; month++ {
+	for month := 1; month <= currentMonth; month++ {
 		monthKey := fmt.Sprintf("%d-%02d", currentYear, month)
 		revenue := monthlyRevenues[monthKey]
 		monthlyRevenueArray = append(monthlyRevenueArray, MonthlyRevenue{
@@ -140,7 +142,7 @@ func (h *InsightAIHandler) GetBusinessInsights(c *gin.Context) {
 	totalExpenses := totalProductionCost
 
 	// Prepare AI content
-	content := h.prepareInsightContent(monthlyRevenueArray, totalRevenue, totalProfit, totalExpenses)
+	content := h.prepareInsightContent(monthlyRevenueArray, totalRevenue, totalProfit, totalExpenses, currentMonth)
 
 	// Get AI insights
 	aiInsights, err := h.getAIInsights(content)
@@ -163,13 +165,13 @@ func (h *InsightAIHandler) GetBusinessInsights(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
-func (h *InsightAIHandler) prepareInsightContent(monthlyRevenues []MonthlyRevenue, totalRevenue, totalProfit, totalExpenses float64) string {
-	content := "Monthly Revenue Data:\n"
+func (h *InsightAIHandler) prepareInsightContent(monthlyRevenues []MonthlyRevenue, totalRevenue, totalProfit, totalExpenses float64, currentMonth int) string {
+	content := fmt.Sprintf("Monthly Revenue Data (January to %s %d):\n", time.Month(currentMonth).String(), time.Now().Year())
 	for _, monthData := range monthlyRevenues {
 		content += fmt.Sprintf("%s: $%.2f\n", monthData.Month, monthData.Revenue)
 	}
 
-	content += fmt.Sprintf("\nCurrent Financial Numbers:\n")
+	content += fmt.Sprintf("\nCurrent Financial Numbers (Year-to-Date through %s):\n", time.Month(currentMonth).String())
 	content += fmt.Sprintf("Total Revenue: $%.2f\n", totalRevenue)
 	content += fmt.Sprintf("Total Profit: $%.2f\n", totalProfit)
 	content += fmt.Sprintf("Total Expenses: $%.2f\n", totalExpenses)
