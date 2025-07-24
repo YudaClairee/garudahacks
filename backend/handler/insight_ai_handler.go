@@ -19,12 +19,12 @@ type InsightAIHandler struct {
 
 type GroqInsightRequest struct {
 	Messages            []GroqInsightMessage `json:"messages"`
-	Model               string        `json:"model"`
-	Temperature         float64       `json:"temperature"`
-	MaxCompletionTokens int           `json:"max_completion_tokens"`
-	TopP                float64       `json:"top_p"`
-	Stream              bool          `json:"stream"`
-	ReasoningEffort     string        `json:"reasoning_effort"`
+	Model               string               `json:"model"`
+	Temperature         float64              `json:"temperature"`
+	MaxCompletionTokens int                  `json:"max_completion_tokens"`
+	TopP                float64              `json:"top_p"`
+	Stream              bool                 `json:"stream"`
+	ReasoningEffort     string               `json:"reasoning_effort"`
 	ResponseFormat      struct {
 		Type string `json:"type"`
 	} `json:"response_format"`
@@ -49,17 +49,16 @@ type MonthlyRevenue struct {
 	Revenue float64 `json:"revenue"`
 }
 
+type MonthProjection struct {
+	HiPredict  float64 `json:"hi_predict"`
+	Stagnancy  float64 `json:"stagnancy"`
+	BadPredict float64 `json:"bad_predict"`
+}
+
 type RevenueForecast struct {
-	Month1 struct {
-		HiPredict  float64 `json:"hi_predict"`
-		Stagnancy  float64 `json:"stagnancy"`
-		BadPredict float64 `json:"bad_predict"`
-	} `json:"month_1"`
-	Month2 struct {
-		HiPredict  float64 `json:"hi_predict"`
-		Stagnancy  float64 `json:"stagnancy"`
-		BadPredict float64 `json:"bad_predict"`
-	} `json:"month_2"`
+	LastMonthProjection MonthProjection `json:"last_month_projection"`
+	Month1              MonthProjection `json:"month_1"`
+	Month2              MonthProjection `json:"month_2"`
 }
 
 type InsightAIResponse struct {
@@ -186,28 +185,36 @@ func (h *InsightAIHandler) getAIInsights(content string) (*InsightAIResponse, er
 
 	systemPrompt := `You are a financial analytics assistant. I will provide:
 
-        An array of monthly revenues.
+        An array of monthly revenues (e.g., January to July).
 
-        A set of current financial numbers: total revenue, total profit, and total expenses.
+        A set of financial figures: total revenue, total profit, and total expenses.
 
     Your tasks:
 
-        Predict revenue for the next two months based on the given monthly revenue array. For each future month, provide three scenarios:
+    Predict revenue for the last available month (transition month) using three scenarios:
 
-            hi_predict (if growth continues),
+        hi_predict: optimistic spike
 
-            stagnancy (if the trend stays flat),
+        stagnancy: stable scenario
 
-            bad_predict (if there's a downturn).
+        bad_predict: conservative drop
+        This helps simulate how the month could've gone, based on current trends.
 
-        Based on the latest revenue, profit, and expenses, provide at least three practical and actionable tips to improve or manage the business finances. Tips should be based on patterns like profit margin, spending ratio, or inefficiencies.
+    Predict the next two future months, using the same three-scenario structure (hi_predict, stagnancy, bad_predict for each).
 
-        Analyze the revenue trend overall (from the monthly data). Detect whether the trend is increasing, decreasing, seasonal, or fluctuating, and provide a short explanation (max 3 lines).
+    Based on the provided revenue, profit, and expenses, generate at least three actionable tips to help the business make informed decisions.
 
-    Respond in this exact JSON format:
+    Analyze the revenue trend from the historical array: whether it's increasing, declining, seasonal, or inconsistent. Output a summary in no more than 3 lines.
+
+    Output everything strictly in the following JSON format:
 
 {
   "revenue_forecast": {
+    "last_month_projection": {
+      "hi_predict": number,
+      "stagnancy": number,
+      "bad_predict": number
+    },
     "month_1": {
       "hi_predict": number,
       "stagnancy": number,
@@ -227,7 +234,7 @@ func (h *InsightAIHandler) getAIInsights(content string) (*InsightAIResponse, er
   "trend_analytics": "string (max 3 lines summary of revenue trend)"
 }
 
-    Do not include any explanation outside the JSON output.`
+    Do not return any text outside the JSON.`
 
 	reqBody := GroqInsightRequest{
 		Messages: []GroqInsightMessage{
