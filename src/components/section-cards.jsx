@@ -9,54 +9,44 @@ import { useState, useEffect } from "react";
 
 export function SectionCards() {
   const [totalRevenue, setTotalRevenue] = useState(0);
-  const [totalOrders, setTotalOrders] = useState(0);
+  const [totalSales, setTotalSales] = useState(0);
   const [cashflowStatus, setCashflowStatus] = useState("Loading...");
   const [salesForecasting, setSalesForecasting] = useState("Loading...");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+
   const fetchRevenueData = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/api/v1/revenue?months=12`);
-      if (!response.ok) throw new Error('Failed to fetch revenue');
-      
+      const response = await fetch(`http://localhost:8080/api/v1/revenue?months=1`);
+      if (!response.ok) throw new Error('Failed to fetch revenue data');
       const data = await response.json();
-      console.log('Revenue data:', data);
       setTotalRevenue(data.total_revenue || 0);
     } catch (err) {
-      console.error('Error fetching revenue:', err);
+      console.error('Error fetching revenue data:', err);
       setError(err.message);
     }
   };
 
-  const fetchOrdersData = async () => {
-    try {
-      const response = await fetch(`http://localhost:8080/api/v1/orders?months=12`);
-      if (!response.ok) throw new Error('Failed to fetch orders');
-      
-      const data = await response.json();
-      console.log('Orders data:', data);
-      setTotalOrders(data.total_orders || 0);
-    } catch (err) {
-      console.error('Error fetching orders:', err);
-      setError(err.message);
-    }
-  };
-
-  // NEW: Fetch AI analysis data
-  const fetchAIAnalysisData = async () => {
+  // SINGLE API CALL - ambil semua data dari AI analysis endpoint
+  const fetchAllDashboardData = async () => {
     try {
       const response = await fetch(`http://localhost:8080/api/v1/dashboard/ai-analysis?location=Jakarta`);
-      if (!response.ok) throw new Error('Failed to fetch AI analysis');
+      if (!response.ok) throw new Error('Failed to fetch dashboard data');
       
       const data = await response.json();
-      console.log('AI Analysis data:', data);
+      console.log('Dashboard AI Analysis data:', data);
+      
+      // Set total revenue dari YTD data
+      // setTotalRevenue(data.total_revenue_ytd || 0);
+      
+      // Set total sales dari YTD data
+      setTotalSales(data.total_sales_ytd || 0);
       
       // Set cashflow status dari AI analysis
       const cashflow = data.cashflow_analysis;
       if (cashflow) {
-        const statusText = `${cashflow.cashflow_status}`;
-        setCashflowStatus(statusText);
+        setCashflowStatus(cashflow.cashflow_status);
       }
       
       // Set sales forecasting dari AI analysis
@@ -67,8 +57,9 @@ export function SectionCards() {
       }
       
     } catch (err) {
-      console.error('Error fetching AI analysis:', err);
-      // Fallback ke status default kalau AI analysis gagal
+      console.error('Error fetching dashboard data:', err);
+      setError(err.message);
+      // Fallback values
       setCashflowStatus("Fair");
       setSalesForecasting("Calculating...");
     }
@@ -78,11 +69,7 @@ export function SectionCards() {
     const fetchAllData = async () => {
       setLoading(true);
       try {
-        await Promise.all([
-          fetchRevenueData(), 
-          fetchOrdersData(),
-          fetchAIAnalysisData() // Add AI analysis fetch
-        ]);
+        await Promise.all([fetchRevenueData(), fetchAllDashboardData()]); // Single API call
       } catch (err) {
         setError('Failed to fetch data');
       } finally {
@@ -112,7 +99,6 @@ export function SectionCards() {
 
   // Function to get forecast trend color
   const getForecastColor = (forecast) => {
-    // Parse number dari forecast string
     const numberMatch = forecast.match(/\d+/);
     if (numberMatch) {
       const num = parseInt(numberMatch[0]);
@@ -155,7 +141,7 @@ export function SectionCards() {
             ) : error ? (
               <p className="text-2xl font-bold text-red-500">Error</p>
             ) : (
-              <p className="text-2xl font-bold">{totalOrders.toLocaleString('id-ID')}</p>
+              <p className="text-2xl font-bold">{totalSales.toLocaleString('id-ID')}</p>
             )}
           </div>
         </CardHeader>

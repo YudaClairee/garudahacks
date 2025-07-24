@@ -31,11 +31,6 @@ export function NavMain() {
       href: "/dashboard/produk",
     },
     {
-      title: "Transaksi",
-      icon: BanknoteArrowUp,
-      href: "/dashboard/transaksi",
-    },
-    {
       title: "Insight AI",
       icon: Brain,
       href: "/dashboard/insight-ai",
