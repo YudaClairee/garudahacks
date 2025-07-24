@@ -10,6 +10,8 @@ import { useState, useEffect } from "react";
 export function SectionCards() {
   const [totalRevenue, setTotalRevenue] = useState(0);
   const [totalOrders, setTotalOrders] = useState(0);
+  const [cashflowStatus, setCashflowStatus] = useState("Loading...");
+  const [salesForecasting, setSalesForecasting] = useState("Loading...");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -19,7 +21,7 @@ export function SectionCards() {
       if (!response.ok) throw new Error('Failed to fetch revenue');
       
       const data = await response.json();
-      console.log('Revenue data:', data); // Debug log
+      console.log('Revenue data:', data);
       setTotalRevenue(data.total_revenue || 0);
     } catch (err) {
       console.error('Error fetching revenue:', err);
@@ -27,14 +29,13 @@ export function SectionCards() {
     }
   };
 
-  // TAMBAH function yang hilang
   const fetchOrdersData = async () => {
     try {
       const response = await fetch(`http://localhost:8080/api/v1/orders?months=12`);
       if (!response.ok) throw new Error('Failed to fetch orders');
       
       const data = await response.json();
-      console.log('Orders data:', data); // Debug log
+      console.log('Orders data:', data);
       setTotalOrders(data.total_orders || 0);
     } catch (err) {
       console.error('Error fetching orders:', err);
@@ -42,11 +43,46 @@ export function SectionCards() {
     }
   };
 
+  // NEW: Fetch AI analysis data
+  const fetchAIAnalysisData = async () => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/v1/dashboard/ai-analysis?location=Jakarta`);
+      if (!response.ok) throw new Error('Failed to fetch AI analysis');
+      
+      const data = await response.json();
+      console.log('AI Analysis data:', data);
+      
+      // Set cashflow status dari AI analysis
+      const cashflow = data.cashflow_analysis;
+      if (cashflow) {
+        const statusText = `${cashflow.cashflow_status}`;
+        setCashflowStatus(statusText);
+      }
+      
+      // Set sales forecasting dari AI analysis
+      const aiAnalysis = data.ai_analysis;
+      if (aiAnalysis) {
+        const forecastText = aiAnalysis.sales_forecast_next_month?.toLocaleString('id-ID') || "0";
+        setSalesForecasting(`${forecastText} orders`);
+      }
+      
+    } catch (err) {
+      console.error('Error fetching AI analysis:', err);
+      // Fallback ke status default kalau AI analysis gagal
+      setCashflowStatus("Fair");
+      setSalesForecasting("Calculating...");
+    }
+  };
+
   useEffect(() => {
     const fetchAllData = async () => {
       setLoading(true);
       try {
-        await Promise.all([fetchRevenueData(), fetchOrdersData()]);
+        await Promise.all([
+          fetchRevenueData(), 
+          fetchOrdersData(),
+          fetchAIAnalysisData() // Add AI analysis fetch
+        ]);
       } catch (err) {
         setError('Failed to fetch data');
       } finally {
@@ -63,6 +99,28 @@ export function SectionCards() {
       currency: 'IDR',
       minimumFractionDigits: 0,
     }).format(amount);
+  };
+
+  // Function to get status color based on AI analysis
+  const getStatusColor = (status) => {
+    if (status.includes('EXCELLENT') || status.includes('OUTSTANDING')) return 'text-green-600';
+    if (status.includes('GOOD')) return 'text-blue-600';
+    if (status.includes('FAIR')) return 'text-yellow-600';
+    if (status.includes('POOR') || status.includes('NEGATIVE')) return 'text-red-600';
+    return 'text-gray-600';
+  };
+
+  // Function to get forecast trend color
+  const getForecastColor = (forecast) => {
+    // Parse number dari forecast string
+    const numberMatch = forecast.match(/\d+/);
+    if (numberMatch) {
+      const num = parseInt(numberMatch[0]);
+      if (num > 100) return 'text-green-600'; // High forecast
+      if (num > 50) return 'text-blue-600';   // Medium forecast  
+      if (num > 0) return 'text-yellow-600';  // Low forecast
+    }
+    return 'text-red-600'; // Very low or error
   };
 
   return (
@@ -110,8 +168,8 @@ export function SectionCards() {
           </div>
           <div>
             <p className="text-sm font-medium text-muted-foreground">Cashflow Status</p>
-            <p className="text-2xl font-bold">
-              {loading ? "Loading..." : totalRevenue > 1000000 ? "Good" : "Fair"}
+            <p className={`text-2xl font-bold ${getStatusColor(cashflowStatus)}`}>
+              {loading ? "Loading..." : cashflowStatus}
             </p>
           </div>
         </CardHeader>
@@ -124,8 +182,8 @@ export function SectionCards() {
           </div>
           <div>
             <p className="text-sm font-medium text-muted-foreground">Sales Forecasting</p>
-            <p className="text-2xl font-bold">
-              {loading ? "Loading..." : Math.round(totalOrders * 1.15).toLocaleString('id-ID')}
+            <p className={`text-2xl font-bold ${getForecastColor(salesForecasting)}`}>
+              {loading ? "Loading..." : salesForecasting}
             </p>
           </div>
         </CardHeader>
