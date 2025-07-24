@@ -36,7 +36,9 @@ export default function insightAiPage() {
                 </div>
               </div>
             </div>
-            <div className="flex flex-col gap-4"></div>
+            <div className="flex flex-col gap-4">
+              <h2 className="text-2xl font-bold text-gray-900">Cashflow Analysis</h2>
+            </div>
           </div>
         </div>
       </div>
