@@ -1,16 +1,6 @@
 "use client"
 
 import * as React from "react"
-import {
-  IconChefHat,
-  IconDashboard,
-  IconShoppingCart,
-  IconToolsKitchen2,
-  IconUsers,
-  IconCreditCard,
-  IconReport,
-  IconSettings,
-} from "@tabler/icons-react"
 
 import { NavDocuments } from "@/components/nav-documents"
 import { NavMain } from "@/components/nav-main"
@@ -25,6 +15,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
+import { PiggyBank } from "lucide-react"
 
 const data = {
   user: {
@@ -44,8 +35,8 @@ export function AppSidebar({
           <SidebarMenuItem>
             <SidebarMenuButton asChild className="data-[slot=sidebar-menu-button]:!p-1.5">
               <a href="/dashboard">
-                <IconChefHat className="!size-5" />
-                <span className="text-base font-semibold">Hire Chef</span>
+                <PiggyBank className="!size-10" />
+                <span className="text-base font-semibold">NABUNG</span>
               </a>
             </SidebarMenuButton>
           </SidebarMenuItem>

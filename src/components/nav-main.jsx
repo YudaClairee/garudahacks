@@ -38,12 +38,12 @@ export function NavMain() {
     {
       title: "Insight AI",
       icon: Brain,
-      href: "/insight-ai",
+      href: "/dashboard/insight-ai",
     },
     {
       title: "Setelan",
       icon: Settings,
-      href: "/setelan",
+      href: "/dashboard/setelan",
     },
     {
       title: "Input CSV",

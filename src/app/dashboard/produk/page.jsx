@@ -1,3 +1,5 @@
+import { Button } from "@/components/ui/button";
+
 export default function ProdukPage() {
   return (
     <div className="space-y-6">
@@ -9,12 +11,15 @@ export default function ProdukPage() {
       <div className="px-4 lg:px-6">
         <div className="flex justify-between items-center mb-6">
           <div className="flex gap-3">
-            <button className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors">
+            <Button className="border bg-indigo-100 border-indigo-600 text-indigo-600 px-4 py-2 rounded-lg hover:bg-indigo-600 hover:text-white transition-colors">
               Tambah Produk
-            </button>
-            <button className="border border-gray-300 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors">
+            </Button>
+            <Button className="border bg-indigo-100 border-indigo-600 text-indigo-600 px-4 py-2 rounded-lg hover:bg-indigo-600 hover:text-white transition-colors">
               Import CSV
-            </button>
+            </Button>
+            <Button className="border bg-indigo-100 border-indigo-600 text-indigo-600 px-4 py-2 rounded-lg hover:bg-indigo-600 hover:text-white transition-colors">
+              Input from Your POS
+            </Button>
           </div>
           <div className="flex gap-2">
             <input 
@@ -22,9 +27,9 @@ export default function ProdukPage() {
               placeholder="Cari produk..." 
               className="border border-gray-300 px-3 py-2 rounded-lg w-64"
             />
-            <button className="border border-gray-300 px-3 py-2 rounded-lg hover:bg-gray-50">
+            <Button className="border border-gray-300 px-3 py-2 rounded-lg hover:bg-gray-50">
               Filter
-            </button>
+            </Button>
           </div>
         </div>
         
