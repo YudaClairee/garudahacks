@@ -120,3 +120,38 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Custom Sidebar Styles */
+@layer components {
+  .sidebar-menu-item {
+    @apply relative overflow-hidden;
+  }
+
+  .sidebar-menu-item[data-active="true"]::before {
+    @apply scale-y-100;
+  }
+
+  .sidebar-menu-button-active {
+    @apply bg-gradient-to-r from-indigo-50 to-indigo-100 shadow-sm;
+  }
+
+  .sidebar-menu-button-hover {
+    @apply transform transition-all duration-200 hover:translate-x-1 hover:shadow-md;
+  }
+}
+
+/* Enhanced hover animations */
+@keyframes slideIn {
+  from {
+    transform: translateX(-10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* .menu-item-enter {
+  animation: slideIn 0.2s ease-out;
+} */
