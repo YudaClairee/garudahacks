@@ -10,13 +10,15 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Upload, FileText, X } from "lucide-react";
 
 export default function ProdukPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
   const [isDragOver, setIsDragOver] = useState(false);
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   // const handleFileSelect = (event) => {
   //   const file = event.target.files[0];
@@ -35,7 +37,33 @@ export default function ProdukPage() {
       alert('Please select a valid CSV file (.csv)');
     }
   };
-  
+
+  // Function untuk fetch items dari API
+  const getItems = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch('http://localhost:8080/api/v1/items/get-all');
+      
+      if (response.ok) {
+        const data = await response.json();
+        setItems(data.items || []);
+        console.log(`Berhasil load ${data.total_items} items`);
+      } else {
+        console.error('Gagal fetch items:', response.statusText);
+        alert('Gagal load data produk');
+      }
+    } catch (error) {
+      console.error('Error fetching items:', error);
+      alert('Error koneksi ke server');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Load items saat component mount
+  useEffect(() => {
+    getItems();
+  }, []);
 
   // const handleDrop = (event) => {
   //   event.preventDefault();
@@ -87,8 +115,9 @@ export default function ProdukPage() {
           alert(`File ${selectedFile.name} berhasil diupload! ${result.items_added || 0} produk ditambahkan.`);
           setSelectedFile(null);
           setIsDialogOpen(false);
-          // Optional: refresh page atau reload data
-          window.location.reload();
+          
+          // Refresh data setelah upload berhasil
+          await getItems();
         } else {
           const error = await response.json();
           alert(`Upload gagal: ${error.error || 'Unknown error'}`);
@@ -114,9 +143,7 @@ export default function ProdukPage() {
       <div className="px-4 lg:px-6">
         <div className="flex justify-between items-center mb-6">
           <div className="flex gap-3">
-            <Button className="border bg-indigo-100 border-indigo-600 text-indigo-600 px-4 py-2 rounded-lg hover:bg-indigo-600 hover:text-white transition-colors">
-              Tambah Produk
-            </Button>
+
             
             {/* Import CSV Dialog */}
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -245,56 +272,51 @@ export default function ProdukPage() {
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Produk</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Kategori</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Harga</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Stok</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Harga Produksi</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Aksi</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              <tr>
-                <td className="px-6 py-4">
-                  <div className="flex items-center">
-                    <div className="w-10 h-10 bg-gray-200 rounded-lg mr-3"></div>
-                    <div>
-                      <div className="font-medium">Nasi Gudeg Special</div>
-                      <div className="text-sm text-gray-500">SKU: GDG001</div>
-                    </div>
-                  </div>
-                </td>
-                <td className="px-6 py-4 text-sm text-gray-900">Makanan Utama</td>
-                <td className="px-6 py-4 text-sm text-gray-900">Rp 25,000</td>
-                <td className="px-6 py-4 text-sm text-gray-900">150</td>
-                <td className="px-6 py-4">
-                  <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Aktif</span>
-                </td>
-                <td className="px-6 py-4 text-sm">
-                  <button className="text-indigo-600 hover:text-indigo-900 mr-3">Edit</button>
-                  <button className="text-red-600 hover:text-red-900">Hapus</button>
-                </td>
-              </tr>
-              <tr>
-                <td className="px-6 py-4">
-                  <div className="flex items-center">
-                    <div className="w-10 h-10 bg-gray-200 rounded-lg mr-3"></div>
-                    <div>
-                      <div className="font-medium">Sate Ayam Bumbu Kacang</div>
-                      <div className="text-sm text-gray-500">SKU: SAT002</div>
-                    </div>
-                  </div>
-                </td>
-                <td className="px-6 py-4 text-sm text-gray-900">Makanan Utama</td>
-                <td className="px-6 py-4 text-sm text-gray-900">Rp 30,000</td>
-                <td className="px-6 py-4 text-sm text-gray-900">89</td>
-                <td className="px-6 py-4">
-                  <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Aktif</span>
-                </td>
-                <td className="px-6 py-4 text-sm">
-                  <button className="text-indigo-600 hover:text-indigo-900 mr-3">Edit</button>
-                  <button className="text-red-600 hover:text-red-900">Hapus</button>
-                </td>
-              </tr>
+              {loading ? (
+                <tr>
+                  <td colSpan="5" className="px-6 py-4 text-center">
+                    Loading...
+                  </td>
+                </tr>
+              ) : items.length === 0 ? (
+                <tr>
+                  <td colSpan="5" className="px-6 py-4 text-center text-gray-500">
+                    Belum ada produk
+                  </td>
+                </tr>
+              ) : (
+                items.map((item) => (
+                  <tr key={item.id}>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center">
+                        <div className="w-10 h-10 bg-gray-200 rounded-lg mr-3"></div>
+                        <div>
+                          <div className="font-medium">{item.name}</div>
+                          <div className="text-sm text-gray-500">ID: {item.id}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-900">
+                      Rp {item.price.toLocaleString('id-ID')}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-900">{item.stock}</td>
+                    <td className="px-6 py-4 text-sm text-gray-900">
+                      Rp {item.production_price.toLocaleString('id-ID')}
+                    </td>
+                    <td className="px-6 py-4 text-sm">
+                      <button className="text-indigo-600 hover:text-indigo-900 mr-3">Edit</button>
+                      <button className="text-red-600 hover:text-red-900">Hapus</button>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>

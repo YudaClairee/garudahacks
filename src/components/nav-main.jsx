@@ -40,11 +40,6 @@ export function NavMain() {
       icon: Settings,
       href: "/dashboard/setelan",
     },
-    {
-      title: "Input CSV",
-      icon: Upload,
-      href: "/input-csv",
-    },
   ];
 
   return (
