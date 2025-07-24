@@ -56,11 +56,12 @@ func main() {
 	r.Use(cors.New(config))
 
 	// Initialize adapters and handlers with sqlx DB
-	posAdapter := adapter.NewDBPosAdapter(db) // We'll need to create this method
+	posAdapter := adapter.NewDBPosAdapter(db)
 	revenueHandler := handler.NewRevenueHandler(posAdapter)
 	ordersHandler := handler.NewOrdersHandler(posAdapter)
 	itemSalesHandler := handler.NewItemSalesHandler(posAdapter)
 	dashboardAIAnalytics := handler.NewDashboardAIHandler(posAdapter)
+	addItemHandler := handler.NewAddItemHandler(posAdapter)
 
 	// Routes
 	r.GET("/", func(c *gin.Context) {
@@ -77,6 +78,11 @@ func main() {
 		api.GET("/items/sales", itemSalesHandler.GetItemSales)
 		api.GET("/items/top-selling", itemSalesHandler.GetTopSellingItems)
 		api.GET("/dashboard/ai-analysis", dashboardAIAnalytics.GetDashboardAIAnalysis)
+
+		// Add Item routes
+		api.POST("/items/upload-csv", addItemHandler.AddItemsFromCSV)
+		api.POST("/items/add-single-item", addItemHandler.AddSingleItem)
+		api.GET("/items/csv-template", addItemHandler.GetCSVTemplate)
 	}
 
 	// Start server on port 8080
