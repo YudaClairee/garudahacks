@@ -1,0 +1,129 @@
+"use client"
+
+import * as React from "react"
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+// import { Badge } from "@/components/ui/badge"
+
+// const ordersData = [
+//   {
+//     orderId: "#87961",
+//     customerName: "Mark Allen",
+//     date: "May 25, 2023",
+//     time: "10:30 AM",
+//     amount: "$120",
+//     paymentType: "Online",
+//     status: "pending",
+//   },
+//   {
+//     orderId: "#87961",
+//     customerName: "Mark Allen", 
+//     date: "May 25, 2023",
+//     time: "10:30 AM",
+//     amount: "$120",
+//     paymentType: "Online",
+//     status: "pending",
+//   },
+//   {
+//     orderId: "#87961",
+//     customerName: "Mark Allen",
+//     date: "May 25, 2023", 
+//     time: "10:30 AM",
+//     amount: "$120",
+//     paymentType: "Online",
+//     status: "pending",
+//   },
+//   {
+//     orderId: "#87961",
+//     customerName: "Mark Allen",
+//     date: "May 25, 2023",
+//     time: "10:30 AM", 
+//     amount: "$120",
+//     paymentType: "Online",
+//     status: "pending",
+//   },
+// ]
+
+export function OpportunityTable() {
+  return (
+    <Card>
+      <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
+        <div className="grid flex-1 gap-1 text-center sm:text-left">
+          <CardTitle>Opportunity</CardTitle>
+        </div>
+      </CardHeader>
+      <CardContent className="p-">
+        {/* <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="px-6">Order ID</TableHead>
+              <TableHead>Customer Name</TableHead>
+              <TableHead>Date</TableHead>
+              <TableHead>Time</TableHead>
+              <TableHead>Amount</TableHead>
+              <TableHead>Payment Type</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead className="text-right px-6">Action</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {ordersData.map((order, index) => (
+              <TableRow key={index}>
+                <TableCell className="font-medium px-6">{order.orderId}</TableCell>
+                <TableCell>{order.customerName}</TableCell>
+                <TableCell>{order.date}</TableCell>
+                <TableCell>{order.time}</TableCell>
+                <TableCell>{order.amount}</TableCell>
+                <TableCell>{order.paymentType}</TableCell>
+                <TableCell>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      className="h-8 px-3"
+                    >
+                      Reject
+                    </Button>
+                    <Button
+                      variant="default"
+                      size="sm"
+                      className="h-8 px-3 bg-green-600 hover:bg-green-700"
+                    >
+                      Accept
+                    </Button>
+                  </div>
+                </TableCell>
+                <TableCell className="text-right px-6">
+                  <Button variant="ghost" size="sm">
+                    <IconEye className="h-4 w-4" />
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table> */}
+        <div className="flex flex-row gap-6">
+        <iframe
+  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d8650.482493288953!2d106.65448186500466!3d-6.228933178515297!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69fbdc774920bd%3A0xc1bd189fe0e44b8c!2sRestoran%20Pagi%20Sore%20Alam%20Sutera!5e0!3m2!1sid!2sid!4v1753352825078!5m2!1sid!2sid"
+  width="600"
+  height="450"
+  className="rounded-xl bg-zinc-100 p-4 flex-2"
+  style={{ border: 0 }}
+  allowFullScreen
+  loading="lazy"
+  referrerPolicy="no-referrer-when-downgrade"
+/>
+<div className="flex-1 flex flex-col gap-y-2">
+  <h2 className="text-xl font-semibold">Pertimbangkan pembukaan Cabang</h2>
+  <p>Kompetitor anda, Mixie, Sukses menjual eskrim pada area peta, cuaca yang mendukung dan juga kepadatan mahasiswa yang berada pada Universitas Multimedia </p>
+</div>
+        </div>
+      </CardContent>
+    </Card>
+  )
+} 
