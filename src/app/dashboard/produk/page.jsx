@@ -18,26 +18,48 @@ export default function ProdukPage() {
   const [selectedFile, setSelectedFile] = useState(null);
   const [isDragOver, setIsDragOver] = useState(false);
 
+  // const handleFileSelect = (event) => {
+  //   const file = event.target.files[0];
+  //   if (file && file.type === 'text/csv') {
+  //     setSelectedFile(file);
+  //   } else {
+  //     alert('Please select a valid CSV file');
+  //   }
+  // };
   const handleFileSelect = (event) => {
     const file = event.target.files[0];
-    if (file && file.type === 'text/csv') {
+  
+    if (file && file.name.toLowerCase().endsWith('.csv')) {
       setSelectedFile(file);
     } else {
-      alert('Please select a valid CSV file');
+      alert('Please select a valid CSV file (.csv)');
     }
   };
+  
 
+  // const handleDrop = (event) => {
+  //   event.preventDefault();
+  //   setIsDragOver(false);
+    
+  //   const file = event.dataTransfer.files[0];
+  //   if (file && file.type === 'text/csv') {
+  //     setSelectedFile(file);
+  //   } else {
+  //     alert('Please drop a valid CSV file');
+  //   }
+  // };
   const handleDrop = (event) => {
     event.preventDefault();
     setIsDragOver(false);
     
     const file = event.dataTransfer.files[0];
-    if (file && file.type === 'text/csv') {
+    if (file && file.name.toLowerCase().endsWith('.csv')) {
       setSelectedFile(file);
     } else {
-      alert('Please drop a valid CSV file');
+      alert('Please drop a valid CSV file (.csv)');
     }
   };
+  
 
   const handleDragOver = (event) => {
     event.preventDefault();
@@ -49,13 +71,32 @@ export default function ProdukPage() {
     setIsDragOver(false);
   };
 
-  const handleUpload = () => {
+  const handleUpload = async () => {
     if (selectedFile) {
-      // TODO: Implement upload logic ke backend
-      console.log('Uploading file:', selectedFile.name);
-      alert(`File ${selectedFile.name} berhasil diupload!`);
-      setSelectedFile(null);
-      setIsDialogOpen(false);
+      const formData = new FormData();
+      formData.append('csv_file', selectedFile); // Ganti dari 'file' ke 'csv_file'
+
+      try {
+        const response = await fetch('http://localhost:8080/api/v1/items/upload-csv', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (response.ok) {
+          const result = await response.json();
+          alert(`File ${selectedFile.name} berhasil diupload! ${result.items_added || 0} produk ditambahkan.`);
+          setSelectedFile(null);
+          setIsDialogOpen(false);
+          // Optional: refresh page atau reload data
+          window.location.reload();
+        } else {
+          const error = await response.json();
+          alert(`Upload gagal: ${error.error || 'Unknown error'}`);
+        }
+      } catch (err) {
+        console.error('Upload error:', err);
+        alert('Upload gagal. Cek koneksi internet.');
+      }
     }
   };
 
