@@ -3,6 +3,7 @@ package handler
 import (
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/YudaClairee/garudahacks/model"
@@ -28,8 +29,123 @@ type ItemSalesResponse struct {
 	TotalSold  int         `json:"total_sold"`
 }
 
+type AllItemsResponse struct {
+	Items      []model.Item `json:"items"`
+	TotalItems int          `json:"total_items"`
+	Message    string       `json:"message"`
+}
+
 func NewItemSalesHandler(posAdapter model.POSAdapter) *ItemSalesHandler {
 	return &ItemSalesHandler{posAdapter: posAdapter}
+}
+
+func (h *ItemSalesHandler) GetAllItems(c *gin.Context) {
+	// Get query parameters for filtering and sorting
+	sortBy := c.DefaultQuery("sort_by", "name") // "name", "price", "stock", "production_price"
+	order := c.DefaultQuery("order", "asc")     // "asc" or "desc"
+	search := c.Query("search")                 // Optional search term
+	minStock := c.Query("min_stock")            // Optional minimum stock filter
+	maxPrice := c.Query("max_price")            // Optional maximum price filter
+
+	// Get all items from inventory
+	items, err := h.posAdapter.GetInventory()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch items"})
+		return
+	}
+
+	// Apply filters
+	var filteredItems []model.Item
+
+	for _, item := range items {
+		// Apply search filter
+		if search != "" {
+			searchTerm := strings.ToLower(search)
+			if !strings.Contains(strings.ToLower(item.Name), searchTerm) &&
+				!strings.Contains(strings.ToLower(item.ID), searchTerm) {
+				continue
+			}
+		}
+
+		// Apply minimum stock filter
+		if minStock != "" {
+			minStockInt, err := strconv.Atoi(minStock)
+			if err == nil && item.Stock < minStockInt {
+				continue
+			}
+		}
+
+		// Apply maximum price filter
+		if maxPrice != "" {
+			maxPriceFloat, err := strconv.ParseFloat(maxPrice, 64)
+			if err == nil && item.Price > maxPriceFloat {
+				continue
+			}
+		}
+
+		filteredItems = append(filteredItems, item)
+	}
+
+	// Sort the items
+	h.sortItems(filteredItems, sortBy, order)
+
+	// Prepare response
+	response := AllItemsResponse{
+		Items:      filteredItems,
+		TotalItems: len(filteredItems),
+		Message:    "Items retrieved successfully",
+	}
+
+	c.JSON(http.StatusOK, response)
+}
+
+func (h *ItemSalesHandler) sortItems(items []model.Item, sortBy, order string) {
+	n := len(items)
+	for i := 0; i < n-1; i++ {
+		for j := 0; j < n-i-1; j++ {
+			var shouldSwap bool
+
+			switch sortBy {
+			case "name":
+				if order == "desc" {
+					shouldSwap = items[j].Name < items[j+1].Name
+				} else {
+					shouldSwap = items[j].Name > items[j+1].Name
+				}
+			case "price":
+				if order == "desc" {
+					shouldSwap = items[j].Price < items[j+1].Price
+				} else {
+					shouldSwap = items[j].Price > items[j+1].Price
+				}
+			case "stock":
+				if order == "desc" {
+					shouldSwap = items[j].Stock < items[j+1].Stock
+				} else {
+					shouldSwap = items[j].Stock > items[j+1].Stock
+				}
+			case "production_price":
+				if order == "desc" {
+					shouldSwap = items[j].ProductionPrice < items[j+1].ProductionPrice
+				} else {
+					shouldSwap = items[j].ProductionPrice > items[j+1].ProductionPrice
+				}
+			case "id":
+				if order == "desc" {
+					shouldSwap = items[j].ID < items[j+1].ID
+				} else {
+					shouldSwap = items[j].ID > items[j+1].ID
+				}
+			default:
+				// Default to name ascending
+				shouldSwap = items[j].Name > items[j+1].Name
+			}
+
+			if shouldSwap {
+				items[j], items[j+1] = items[j+1], items[j]
+			}
+		}
+	}
 }
 
 func (h *ItemSalesHandler) GetItemSales(c *gin.Context) {

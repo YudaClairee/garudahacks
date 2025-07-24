@@ -75,8 +75,10 @@ func main() {
 	{
 		api.GET("/revenue", revenueHandler.GetTotalRevenue)
 		api.GET("/orders", ordersHandler.GetTotalOrders)
+		api.GET("/orders/get-all", ordersHandler.GetAllOrders)
 		api.GET("/items/sales", itemSalesHandler.GetItemSales)
 		api.GET("/items/top-selling", itemSalesHandler.GetTopSellingItems)
+		api.GET("/items/get-all", itemSalesHandler.GetAllItems)
 		api.GET("/dashboard/ai-analysis", dashboardAIAnalytics.GetDashboardAIAnalysis)
 
 		// Add Item routes
