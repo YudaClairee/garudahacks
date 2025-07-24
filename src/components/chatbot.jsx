@@ -10,7 +10,7 @@ export function Chatbot() {
   const [messages, setMessages] = useState([
     {
       id: 1,
-      text: "Halo! Aku AI assistant kamu. Tanya apa aja tentang bisnis kamu!",
+      text: "Halo! Aku AI assistant untuk analytics bisnis kamu. Tanya apa aja tentang penjualan, inventory, atau insights bisnis!",
       sender: "ai",
       timestamp: new Date()
     }
@@ -38,37 +38,54 @@ export function Chatbot() {
     };
 
     setMessages(prev => [...prev, userMessage]);
+    const currentMessage = inputValue;
     setInputValue("");
     setIsLoading(true);
 
     try {
-      // Call your AI API here
-      const response = await fetch('/api/chat', {
+      // Hit backend API yang udah ada
+      const response = await fetch('http://localhost:8080/api/v1/chat', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: inputValue })
+        headers: { 
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          message: currentMessage 
+        })
       });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
 
       const data = await response.json();
       
       const aiMessage = {
         id: Date.now() + 1,
-        text: data.response || "Maaf, aku lagi error nih.",
+        text: data.response || "Maaf, aku lagi error nih bro.",
         sender: "ai",
         timestamp: new Date()
       };
 
       setMessages(prev => [...prev, aiMessage]);
     } catch (error) {
+      console.error('Error sending message:', error);
       const errorMessage = {
         id: Date.now() + 1,
-        text: "Maaf, koneksi bermasalah. Coba lagi ya!",
+        text: "Maaf, koneksi bermasalah. Pastikan backend server jalan ya bro! 🔧",
         sender: "ai",
         timestamp: new Date()
       };
       setMessages(prev => [...prev, errorMessage]);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
     }
   };
 
@@ -81,8 +98,8 @@ export function Chatbot() {
             <Bot className="w-5 h-5 text-indigo-600" />
           </div>
           <div>
-            <h3 className="font-medium">AI Assistant</h3>
-            <p className="text-sm text-gray-500">Online</p>
+            <h3 className="font-medium">AI Business Assistant</h3>
+            <p className="text-sm text-gray-500">Analytics & Insights</p>
           </div>
         </div>
       </div>
@@ -96,7 +113,7 @@ export function Chatbot() {
         {isLoading && (
           <div className="flex items-center gap-2 text-gray-500">
             <Bot className="w-4 h-4" />
-            <span className="text-sm">AI sedang mengetik...</span>
+            <span className="text-sm">AI sedang menganalisis data bisnis kamu...</span>
             <div className="flex gap-1">
               <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
               <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
@@ -114,9 +131,10 @@ export function Chatbot() {
           <Input
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
-            placeholder="Ketik pesan kamu..."
-            onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+            placeholder="Tanya tentang penjualan, inventory, profit, atau insights bisnis..."
+            onKeyPress={handleKeyPress}
             disabled={isLoading}
+            className="flex-1"
           />
           <Button 
             onClick={sendMessage}
@@ -125,6 +143,11 @@ export function Chatbot() {
           >
             <Send className="w-4 h-4" />
           </Button>
+        </div>
+        <div className="mt-2">
+          <p className="text-xs text-gray-500">
+            💡 Contoh: "Gimana performa penjualan bulan ini?" atau "Item mana yang paling laku?"
+          </p>
         </div>
       </div>
     </div>
