@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { CashflowForecast } from "@/components/cashflow-forecast";
+import { Chatbot } from "@/components/chatbot";
 
 export default function insightAiPage() {
   return (
@@ -12,7 +13,7 @@ export default function insightAiPage() {
         <div className="grid grid-cols-3 gap-4">
           <div className="col-span-2 p-6 border border-gray-200 rounded-lg flex flex-col gap-4">
             <CashflowForecast />
-            <CashflowForecast />
+            <Chatbot />
           </div>
           {/* <div className="col-span-2 p-6 border border-gray-200 rounded-lg">
             <CashflowForecast />
