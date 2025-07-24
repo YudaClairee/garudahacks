@@ -63,6 +63,7 @@ func main() {
 	dashboardAIAnalytics := handler.NewDashboardAIHandler(posAdapter)
 	addItemHandler := handler.NewAddItemHandler(posAdapter)
 	chatbotHandler := handler.NewChatbotHandler(posAdapter)
+	insightAIHandler := handler.NewInsightAIHandler(posAdapter)
 
 	// Routes
 	r.GET("/", func(c *gin.Context) {
@@ -81,6 +82,7 @@ func main() {
 		api.GET("/items/top-selling", itemSalesHandler.GetTopSellingItems)
 		api.GET("/items/get-all", itemSalesHandler.GetAllItems)
 		api.GET("/dashboard/ai-analysis", dashboardAIAnalytics.GetDashboardAIAnalysis)
+		api.GET("/insights/ai-analysis", insightAIHandler.GetBusinessInsights) // New route
 
 		// Add Item routes
 		api.POST("/items/upload-csv", addItemHandler.AddItemsFromCSV)
