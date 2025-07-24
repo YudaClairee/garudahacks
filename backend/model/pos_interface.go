@@ -7,6 +7,7 @@ type Item struct {
 	Name  string
 	Stock int
 	Price float64
+	ProductionPrice float64
 }
 
 type Order struct {

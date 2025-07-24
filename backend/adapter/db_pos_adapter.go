@@ -21,7 +21,7 @@ func NewDBPosAdapter(db *sqlx.DB) *DBPosAdapter {
 
 func (d *DBPosAdapter) GetInventory() ([]model.Item, error) {
 	query := `
-        SELECT id, name, stock, price 
+        SELECT id, name, stock, price, production_price AS productionprice
         FROM items 
         ORDER BY name`
 

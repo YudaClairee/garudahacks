@@ -60,6 +60,7 @@ func main() {
 	revenueHandler := handler.NewRevenueHandler(posAdapter)
 	ordersHandler := handler.NewOrdersHandler(posAdapter)
 	itemSalesHandler := handler.NewItemSalesHandler(posAdapter)
+	dashboardAIAnalytics := handler.NewDashboardAIHandler(posAdapter)
 
 	// Routes
 	r.GET("/", func(c *gin.Context) {
@@ -75,6 +76,7 @@ func main() {
 		api.GET("/orders", ordersHandler.GetTotalOrders)
 		api.GET("/items/sales", itemSalesHandler.GetItemSales)
 		api.GET("/items/top-selling", itemSalesHandler.GetTopSellingItems)
+		api.GET("/dashboard/ai-analysis", dashboardAIAnalytics.GetDashboardAIAnalysis)
 	}
 
 	// Start server on port 8080
