@@ -74,7 +74,6 @@ NABUNG.AI menyediakan dashboard terpusat yang menggabungkan:
 - **Framework**: Next.js 15.4.3 dengan React 19
 - **Styling**: TailwindCSS dengan shadcn/ui components
 - **Charts**: Recharts untuk data visualization
-- **Drag & Drop**: @dnd-kit untuk interactive features
 - **State Management**: React hooks dan context
 
 ### Backend Stack
@@ -87,7 +86,6 @@ NABUNG.AI menyediakan dashboard terpusat yang menggabungkan:
 
 ### Key Components
 
-- **Data Tables**: Advanced sorting, filtering, dan pagination
 - **Interactive Charts**: Revenue trends, best-selling products
 - **Responsive Dashboard**: Mobile-first design approach
 - **Real-time Updates**: Live data synchronization
