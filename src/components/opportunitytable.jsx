@@ -92,11 +92,11 @@ export function OpportunityTable() {
         </div>
       </CardHeader>
       <CardContent className="p-6">
-        <div className="flex flex-row gap-6">
+        <div className="flex flex-col lg:flex-row gap-6">
         <iframe
   src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d8650.482493288953!2d106.65448186500466!3d-6.228933178515297!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69fbdc774920bd%3A0xc1bd189fe0e44b8c!2sRestoran%20Pagi%20Sore%20Alam%20Sutera!5e0!3m2!1sid!2sid!4v1753352825078!5m2!1sid!2sid"
-  width="600"
-  height="450"
+  width="100%"
+  height="400"
   className="rounded-xl bg-zinc-100 p-4 flex-2"
   style={{ border: 0 }}
   allowFullScreen

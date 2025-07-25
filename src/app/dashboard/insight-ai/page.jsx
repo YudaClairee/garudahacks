@@ -43,13 +43,13 @@ export default function InsightAiPage() {
       </div>
 
       <div className="px-4 lg:px-6">
-        <div className="grid grid-cols-3 gap-4">
-          <div className="col-span-2 p-6 border border-gray-200 rounded-lg flex flex-col gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="col-span-1 md:col-span-2 lg:col-span-2 p-6 border border-gray-200 rounded-lg flex flex-col gap-4">
             <CashflowForecast />
             <Chatbot />
           </div>
 
-          <div className="col-span-1 flex flex-col gap-10 border border-gray-200 rounded-lg p-6">
+          <div className="col-span-1 md:col-span-1 lg:col-span-1 flex flex-col gap-10 border border-gray-200 rounded-lg p-6">
             {/* Cashflow Analysis - Data from API */}
             <div className="flex flex-col gap-4">
               <h2 className="text-2xl font-bold text-gray-900">Cashflow Analysis</h2>
