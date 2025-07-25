@@ -29,4 +29,6 @@ type POSAdapter interface {
 	AddItems(items []Item) error
 	UpdateItem(item Item) error
 	DeleteItem(itemID string) error
+	AddOrder(order Order) error
+	AddOrders(orders []Order) error
 }

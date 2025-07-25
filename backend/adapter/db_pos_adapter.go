@@ -19,6 +19,251 @@ func NewDBPosAdapter(db *sqlx.DB) *DBPosAdapter {
 	}
 }
 
+func (d *DBPosAdapter) AddOrder(order model.Order) error {
+	// Start a transaction
+	tx, err := d.db.Beginx()
+	if err != nil {
+		return fmt.Errorf("failed to begin transaction: %w", err)
+	}
+	defer tx.Rollback()
+
+	// Insert order
+	orderQuery := `
+        INSERT INTO orders (id, total, completed_at)
+        VALUES ($1, $2, $3)
+        ON CONFLICT (id) DO UPDATE SET
+            total = EXCLUDED.total,
+            completed_at = EXCLUDED.completed_at`
+
+	_, err = tx.Exec(orderQuery, order.ID, order.Total, order.CompletedAt)
+	if err != nil {
+		log.Printf("Failed to insert order %s: %v", order.ID, err)
+		return fmt.Errorf("failed to insert order %s: %w", order.ID, err)
+	}
+
+	// Delete existing order items (in case of update)
+	deleteItemsQuery := `DELETE FROM order_items WHERE order_id = $1`
+	_, err = tx.Exec(deleteItemsQuery, order.ID)
+	if err != nil {
+		log.Printf("Failed to delete existing order items for order %s: %v", order.ID, err)
+		return fmt.Errorf("failed to delete existing order items for order %s: %w", order.ID, err)
+	}
+
+	// Insert order items
+	itemQuery := `INSERT INTO order_items (order_id, item_id, quantity) VALUES ($1, $2, $3)`
+
+	for _, item := range order.Items {
+		_, err = tx.Exec(itemQuery, order.ID, item.ItemID, item.Quantity)
+		if err != nil {
+			log.Printf("Failed to insert order item %s for order %s: %v", item.ItemID, order.ID, err)
+			return fmt.Errorf("failed to insert order item %s for order %s: %w", item.ItemID, order.ID, err)
+		}
+	}
+
+	// Commit transaction
+	if err := tx.Commit(); err != nil {
+		return fmt.Errorf("failed to commit order transaction: %w", err)
+	}
+
+	log.Printf("Successfully added order: %s with %d items (Total: $%.2f)", order.ID, len(order.Items), order.Total)
+	return nil
+}
+
+func (d *DBPosAdapter) AddOrders(orders []model.Order) error {
+	if len(orders) == 0 {
+		return nil
+	}
+
+	// Start a transaction for batch insert
+	tx, err := d.db.Beginx()
+	if err != nil {
+		return fmt.Errorf("failed to begin transaction: %w", err)
+	}
+	defer tx.Rollback()
+
+	// Prepare statements
+	orderQuery := `
+        INSERT INTO orders (id, total, completed_at)
+        VALUES ($1, $2, $3)
+        ON CONFLICT (id) DO UPDATE SET
+            total = EXCLUDED.total,
+            completed_at = EXCLUDED.completed_at`
+
+	deleteItemsQuery := `DELETE FROM order_items WHERE order_id = $1`
+	itemQuery := `INSERT INTO order_items (order_id, item_id, quantity) VALUES ($1, $2, $3)`
+
+	orderStmt, err := tx.Prepare(orderQuery)
+	if err != nil {
+		return fmt.Errorf("failed to prepare order statement: %w", err)
+	}
+	defer orderStmt.Close()
+
+	deleteStmt, err := tx.Prepare(deleteItemsQuery)
+	if err != nil {
+		return fmt.Errorf("failed to prepare delete statement: %w", err)
+	}
+	defer deleteStmt.Close()
+
+	itemStmt, err := tx.Prepare(itemQuery)
+	if err != nil {
+		return fmt.Errorf("failed to prepare item statement: %w", err)
+	}
+	defer itemStmt.Close()
+
+	successCount := 0
+	var failedOrders []string
+
+	for _, order := range orders {
+		// Insert order
+		_, err = orderStmt.Exec(order.ID, order.Total, order.CompletedAt)
+		if err != nil {
+			log.Printf("Failed to insert order %s in batch: %v", order.ID, err)
+			failedOrders = append(failedOrders, order.ID)
+			continue
+		}
+
+		// Delete existing order items
+		_, err = deleteStmt.Exec(order.ID)
+		if err != nil {
+			log.Printf("Failed to delete existing order items for order %s in batch: %v", order.ID, err)
+			failedOrders = append(failedOrders, order.ID)
+			continue
+		}
+
+		// Insert order items
+		orderSuccess := true
+		for _, item := range order.Items {
+			_, err = itemStmt.Exec(order.ID, item.ItemID, item.Quantity)
+			if err != nil {
+				log.Printf("Failed to insert order item %s for order %s in batch: %v", item.ItemID, order.ID, err)
+				orderSuccess = false
+				break
+			}
+		}
+
+		if orderSuccess {
+			successCount++
+		} else {
+			failedOrders = append(failedOrders, order.ID)
+		}
+	}
+
+	if err := tx.Commit(); err != nil {
+		return fmt.Errorf("failed to commit batch order transaction: %w", err)
+	}
+
+	log.Printf("Successfully added %d out of %d orders in batch", successCount, len(orders))
+
+	if len(failedOrders) > 0 {
+		log.Printf("Failed to add orders: %v", failedOrders)
+	}
+
+	return nil
+}
+
+// GetOrderByID - Helper method to get a single order by ID
+func (d *DBPosAdapter) GetOrderByID(orderID string) (*model.Order, error) {
+	query := `
+        SELECT o.id as order_id, o.total, o.completed_at,
+               oi.item_id, oi.quantity
+        FROM orders o
+        LEFT JOIN order_items oi ON o.id = oi.order_id
+        WHERE o.id = $1
+        ORDER BY oi.item_id`
+
+	type OrderWithItem struct {
+		OrderID     string    `db:"order_id"`
+		Total       float64   `db:"total"`
+		CompletedAt time.Time `db:"completed_at"`
+		ItemID      *string   `db:"item_id"`
+		Quantity    *int      `db:"quantity"`
+	}
+
+	var rows []OrderWithItem
+	err := d.db.Select(&rows, query, orderID)
+	if err != nil {
+		log.Printf("Failed to query order %s: %v", orderID, err)
+		return nil, fmt.Errorf("failed to query order %s: %w", orderID, err)
+	}
+
+	if len(rows) == 0 {
+		return nil, fmt.Errorf("order with ID %s not found", orderID)
+	}
+
+	// Build order from rows
+	order := &model.Order{
+		ID:          rows[0].OrderID,
+		Total:       rows[0].Total,
+		CompletedAt: rows[0].CompletedAt,
+		Items:       []model.OrderItem{},
+	}
+
+	for _, row := range rows {
+		if row.ItemID != nil && row.Quantity != nil {
+			orderItem := model.OrderItem{
+				ItemID:   *row.ItemID,
+				Quantity: *row.Quantity,
+			}
+			order.Items = append(order.Items, orderItem)
+		}
+	}
+
+	return order, nil
+}
+
+// CheckOrderExists - Helper method to check if an order exists
+func (d *DBPosAdapter) CheckOrderExists(orderID string) (bool, error) {
+	query := `SELECT COUNT(*) FROM orders WHERE id = $1`
+
+	var count int
+	err := d.db.Get(&count, query, orderID)
+	if err != nil {
+		return false, fmt.Errorf("failed to check if order exists: %w", err)
+	}
+
+	return count > 0, nil
+}
+
+// DeleteOrder - Helper method to delete an order and its items
+func (d *DBPosAdapter) DeleteOrder(orderID string) error {
+	// Start a transaction
+	tx, err := d.db.Beginx()
+	if err != nil {
+		return fmt.Errorf("failed to begin transaction: %w", err)
+	}
+	defer tx.Rollback()
+
+	// Delete order items first
+	deleteItemsQuery := `DELETE FROM order_items WHERE order_id = $1`
+	_, err = tx.Exec(deleteItemsQuery, orderID)
+	if err != nil {
+		return fmt.Errorf("failed to delete order items for order %s: %w", orderID, err)
+	}
+
+	// Delete order
+	deleteOrderQuery := `DELETE FROM orders WHERE id = $1`
+	result, err := tx.Exec(deleteOrderQuery, orderID)
+	if err != nil {
+		return fmt.Errorf("failed to delete order %s: %w", orderID, err)
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("failed to get rows affected: %w", err)
+	}
+
+	if rowsAffected == 0 {
+		return fmt.Errorf("order with ID %s not found", orderID)
+	}
+
+	if err := tx.Commit(); err != nil {
+		return fmt.Errorf("failed to commit delete transaction: %w", err)
+	}
+
+	log.Printf("Successfully deleted order: %s", orderID)
+	return nil
+}
+
 func (d *DBPosAdapter) GetInventory() ([]model.Item, error) {
 	query := `
         SELECT id, name, stock, price, production_price AS productionprice

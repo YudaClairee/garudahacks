@@ -64,6 +64,7 @@ func main() {
 	addItemHandler := handler.NewAddItemHandler(posAdapter)
 	chatbotHandler := handler.NewChatbotHandler(posAdapter)
 	insightAIHandler := handler.NewInsightAIHandler(posAdapter)
+	addOrderHandler := handler.NewAddOrderHandler(posAdapter)
 
 	// Routes
 	r.GET("/", func(c *gin.Context) {
@@ -88,6 +89,10 @@ func main() {
 		api.POST("/items/upload-csv", addItemHandler.AddItemsFromCSV)
 		api.POST("/items/add-single-item", addItemHandler.AddSingleItem)
 		api.GET("/items/csv-template", addItemHandler.GetCSVTemplate)
+
+		api.POST("/orders/upload-csv", addOrderHandler.AddOrdersFromCSV)
+		api.POST("/orders/add-single-item", addOrderHandler.AddSingleOrder)
+		api.GET("/orders/csv-template", addOrderHandler.GetCSVTemplate)
 
 		api.POST("/chat", chatbotHandler.Chat)
 	}
