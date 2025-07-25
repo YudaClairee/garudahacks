@@ -3,6 +3,11 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { SiteHeader } from "@/components/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
+export const metadata = {
+  title: "Nabung.AI - Dashboard",
+  description: "Nabung.AI Dashboard",
+};
+
 export default function DashboardLayout({ children }) {
   return (
     <SidebarProvider

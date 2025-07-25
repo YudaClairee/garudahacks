@@ -91,10 +91,12 @@ export default function HomePage() {
               markets.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="text-lg px-8">
-                Get Started
-                <ArrowRight className="ml-2 w-5 h-5" />
-              </Button>
+              <Link href="/dashboard">
+                <Button size="lg" className="text-lg px-8">
+                  Get Started
+                  <ArrowRight className="ml-2 w-5 h-5" />
+                </Button>
+              </Link>
               <Button variant="outline" size="lg" className="text-lg px-8">
                 Watch Demo
               </Button>

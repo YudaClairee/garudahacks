@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "Hire Chef - Dashboard",
-  description: "Professional chef hiring platform dashboard",
+  title: "Nabung.AI - Your AI-Powered Business Assistant",
+  description: "Nabung.AI is your AI-powered business assistant",
 };
 
 export default function RootLayout({ children }) {
