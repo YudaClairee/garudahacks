@@ -182,9 +182,9 @@ export function TotalRevenueChart() {
                       labelFormatter={(value) => {
                         return value
                       }}
-                      formatter={(value, name) => [
-                        `$${value}`,
-                        chartConfig[name]?.label || name,
+                      formatter={(value) => [
+                        `Rp ${value.toLocaleString('id-ID')}`,
+                        // chartConfig[name]?.label || name,
                       ]}
                     />
                   }

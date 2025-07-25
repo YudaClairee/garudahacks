@@ -156,9 +156,9 @@ export function BestSellingChart() {
                   cursor={false}
                   content={
                     <ChartTooltipContent
-                      formatter={(value, name) => [
-                        value,
-                        chartConfig[name]?.label || name,
+                      formatter={(value) => [
+                        value + " Orders",
+                        // chartConfig[name]?.label || name,
                       ]}
                     />
                   }
