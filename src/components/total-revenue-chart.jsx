@@ -6,6 +6,7 @@ import { Area, AreaChart, CartesianGrid, XAxis, YAxis, ResponsiveContainer } fro
 import {
   Card,
   CardContent,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
@@ -17,16 +18,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-
-// const chartData = [
-//   { month: "Senin", revenue: 100 },
-//   { month: "Selasa", revenue: 150 },
-//   { month: "Rabu", revenue: 200 },
-//   { month: "Kamis", revenue: 180 },
-//   { month: "Jumat", revenue: 250 },
-//   { month: "Sabtu", revenue: 300 },
-//   { month: "Minggu", revenue: 350 },
-// ]
 
 const chartConfig = {
   revenue: {
@@ -41,14 +32,38 @@ export function TotalRevenueChart() {
   const [chartData, setChartData] = React.useState([])
   const [loading, setLoading] = React.useState(true)
   const [error, setError] = React.useState(null)
+  const [aiInsight, setAiInsight] = React.useState("")
 
-  // STEP 2: Function untuk fetch data
+  // STEP 2: Function untuk fetch AI analysis
+  const fetchAIAnalysis = async () => {
+    try {
+      const response = await fetch(`https://nabung-backend-931967398441.asia-southeast1.run.app/api/v1/dashboard/ai-analysis?location=Tangerang`)
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch AI analysis')
+      }
+      
+      const data = await response.json()
+      
+      // Extract AI insights for revenue
+      if (data.ai_analysis) {
+        if (data.ai_analysis.revenue_insights) {
+          setAiInsight(data.ai_analysis.revenue_insights)
+        }
+      }
+    } catch (err) {
+      console.error('Error fetching AI analysis:', err)
+      setAiInsight("AI insights tidak tersedia saat ini.")
+    }
+  }
+
+  // STEP 3: Function untuk fetch data
   const fetchRevenueData = async (months) => {
     setLoading(true)
     setError(null)
     
     try {
-      const response = await fetch(`http://localhost:8080/api/v1/revenue?months=${months}`)
+      const response = await fetch(`https://nabung-backend-931967398441.asia-southeast1.run.app/api/v1/revenue?months=${months}`)
       
       if (!response.ok) {
         throw new Error('Failed to fetch revenue data')
@@ -56,7 +71,7 @@ export function TotalRevenueChart() {
       
       const data = await response.json()
       
-      // STEP 3: Transform data dari backend ke format chart
+      // STEP 4: Transform data dari backend ke format chart
       const transformedData = Object.entries(data.monthly_revenues || {})
         .map(([month, revenue]) => ({
           month: month, // "2024-01" format
@@ -73,7 +88,7 @@ export function TotalRevenueChart() {
     }
   }
 
-  // STEP 4: Convert timeRange ke months number
+  // STEP 5: Convert timeRange ke months number
   const getMonthsFromTimeRange = (range) => {
     switch(range) {
       case "7d": return 1
@@ -84,13 +99,14 @@ export function TotalRevenueChart() {
     }
   }
 
-  // STEP 5: useEffect untuk fetch data ketika timeRange berubah
+  // STEP 6: useEffect untuk fetch data ketika timeRange berubah
   React.useEffect(() => {
     const months = getMonthsFromTimeRange(timeRange)
     fetchRevenueData(months)
+    fetchAIAnalysis() // Fetch AI insights
   }, [timeRange]) // Re-fetch ketika timeRange berubah
 
-  // STEP 6: Format month untuk display yang lebih bagus
+  // STEP 7: Format month untuk display yang lebih bagus
   const formatMonth = (monthStr) => {
     const date = new Date(monthStr + "-01")
     return date.toLocaleDateString('id-ID', { month: 'short', year: 'numeric' })
@@ -126,7 +142,7 @@ export function TotalRevenueChart() {
         </Select>
       </CardHeader>
       <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
-        {/* STEP 7: Tambah loading dan error handling */}
+        {/* STEP 8: Tambah loading dan error handling */}
         {loading && (
           <div className="flex items-center justify-center h-[250px]">
             <div>Loading...</div>
@@ -185,6 +201,18 @@ export function TotalRevenueChart() {
           </ChartContainer>
         )}
       </CardContent>
+      <CardFooter className="pt-4">
+        <div className="flex w-full items-start gap-2 text-sm">
+          <div className="grid gap-2">
+            <div className="flex items-center gap-2 font-medium text-lg leading-none">
+              AI Insight
+            </div>
+            <div className="flex items-center gap-2 leading-none text-muted-foreground">
+              {aiInsight || "Loading insights..."}
+            </div>
+          </div>
+        </div>
+      </CardFooter>
     </Card>
   )
 } 

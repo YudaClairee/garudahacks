@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
 import { CashflowForecast } from "@/components/cashflow-forecast";
 import { Chatbot } from "@/components/chatbot";
 
@@ -15,7 +14,7 @@ export default function InsightAiPage() {
 
   const fetchInsightData = async () => {
     try {
-      const response = await fetch('http://localhost:8080/api/v1/insights/ai-analysis');
+      const response = await fetch('https://nabung-backend-931967398441.asia-southeast1.run.app/api/v1/insights/ai-analysis');
       if (response.ok) {
         const data = await response.json();
         setInsightData(data);

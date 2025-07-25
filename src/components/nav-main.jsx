@@ -21,22 +21,22 @@ export function NavMain() {
       href: "/dashboard",
     },
     {
-      title: "Data Penjualan",
+      title: "Sales",
       icon: ChartNoAxesCombined,
       href: "/dashboard/data-penjualan",
     },
     {
-      title: "Produk",
+      title: "Product",
       icon: ShoppingBasket,
       href: "/dashboard/produk",
     },
     {
-      title: "Insight AI",
+      title: "AI Insights",
       icon: Brain,
       href: "/dashboard/insight-ai",
     },
     {
-      title: "Setelan",
+      title: "Settings",
       icon: Settings,
       href: "/dashboard/setelan",
     },
