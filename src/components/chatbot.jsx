@@ -98,7 +98,7 @@ export function Chatbot() {
             <Bot className="w-5 h-5 text-indigo-600" />
           </div>
           <div>
-            <h3 className="font-medium">AI Business Assistant</h3>
+            <h3 className="font-medium dark:text-black">AI Business Assistant</h3>
             <p className="text-sm text-gray-500">Analytics & Insights</p>
           </div>
         </div>
@@ -134,14 +134,14 @@ export function Chatbot() {
             placeholder="Tanya tentang penjualan, inventory, profit, atau insights bisnis..."
             onKeyPress={handleKeyPress}
             disabled={isLoading}
-            className="flex-1"
+            className="flex-1 dark:text-black"
           />
           <Button 
             onClick={sendMessage}
             disabled={!inputValue.trim() || isLoading}
             className="bg-indigo-600 hover:bg-indigo-700"
           >
-            <Send className="w-4 h-4" />
+            <Send className="w-4 h-4 dark:text-white" />
           </Button>
         </div>
         <div className="mt-2">
