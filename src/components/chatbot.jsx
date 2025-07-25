@@ -44,7 +44,7 @@ export function Chatbot() {
 
     try {
       // Hit backend API yang udah ada
-      const response = await fetch('http://localhost:8080/api/v1/chat', {
+      const response = await fetch('https://nabung-backend-931967398441.asia-southeast1.run.app/api/v1/chat', {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',

@@ -6,6 +6,7 @@ import { Bar, BarChart, CartesianGrid, XAxis, YAxis, ResponsiveContainer } from 
 import {
   Card,
   CardContent,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
@@ -17,14 +18,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-
-const chartData = [
-  { month: "Tiramissu", orders: 200 },
-  { month: "Red Velvet", orders: 150 },
-  { month: "Matcha", orders: 500 },
-  { month: "Vanilla", orders: 300 },
-  { month: "Choco", orders: 800 },
-]
 
 const chartConfig = {
   orders: {
@@ -39,14 +32,36 @@ export function BestSellingChart() {
   const [chartData, setChartData] = React.useState([])
   const [loading, setLoading] = React.useState(true)
   const [error, setError] = React.useState(null)
+  const [aiInsight, setAiInsight] = React.useState("")
 
-  // STEP 2: Function fetch top selling items
+  // STEP 2: Function fetch AI analysis
+  const fetchAIAnalysis = async () => {
+    try {
+      const response = await fetch(`https://nabung-backend-931967398441.asia-southeast1.run.app/api/v1/dashboard/ai-analysis?location=Jakarta`)
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch AI analysis')
+      }
+      
+      const data = await response.json()
+      
+      // Extract AI insight for top sellers
+      if (data.ai_analysis && data.ai_analysis.top_sellers_recommendation) {
+        setAiInsight(data.ai_analysis.top_sellers_recommendation)
+      }
+    } catch (err) {
+      console.error('Error fetching AI analysis:', err)
+      setAiInsight("AI insights tidak tersedia saat ini.")
+    }
+  }
+
+  // STEP 3: Function fetch top selling items  
   const fetchTopSellingData = async (months) => {
     setLoading(true)
     setError(null)
     
     try {
-      const response = await fetch(`http://localhost:8080/api/v1/items/top-selling?limit=5&months=${months}`)
+      const response = await fetch(`https://nabung-backend-931967398441.asia-southeast1.run.app/api/v1/items/top-selling?limit=5&months=${months}`)
       
       if (!response.ok) {
         throw new Error('Failed to fetch top selling data')
@@ -54,7 +69,7 @@ export function BestSellingChart() {
       
       const data = await response.json()
       
-      // STEP 3: Transform data
+      // STEP 4: Transform data
       const transformedData = data.top_selling_items.map(item => ({
         month: item.item_name, // Pake item_name sebagai label
         orders: item.total_sold // Total sold sebagai value
@@ -69,7 +84,7 @@ export function BestSellingChart() {
     }
   }
 
-  // STEP 4: Convert time range ke months
+  // STEP 5: Convert time range ke months
   const getMonthsFromTimeRange = (range) => {
     switch(range) {
       case "Last 7 Days": return 1
@@ -80,10 +95,11 @@ export function BestSellingChart() {
     }
   }
 
-  // STEP 5: useEffect untuk fetch data
+  // STEP 6: useEffect untuk fetch data
   React.useEffect(() => {
     const months = getMonthsFromTimeRange(timeRange)
     fetchTopSellingData(months)
+    fetchAIAnalysis() // Fetch AI insights
   }, [timeRange])
 
   return (
@@ -157,6 +173,18 @@ export function BestSellingChart() {
           </ChartContainer>
         )}
       </CardContent>
+      <CardFooter className="pt-4">
+        <div className="flex w-full items-start gap-2 text-sm">
+          <div className="grid gap-2">
+            <div className="flex items-center gap-2 font-medium text-lg leading-none">
+              AI Insight
+            </div>
+            <div className="flex items-center gap-2 leading-none text-muted-foreground">
+              {aiInsight || "Loading insights..."}
+            </div>
+          </div>
+        </div>
+      </CardFooter>
     </Card>
   )
 } 

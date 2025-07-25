@@ -58,7 +58,7 @@ export function CashflowForecast() {
     try {
       setLoading(true);
       const response = await fetch(
-        "http://localhost:8080/api/v1/insights/ai-analysis"
+        "https://nabung-backend-931967398441.asia-southeast1.run.app/api/v1/insights/ai-analysis"
       );
 
       if (!response.ok) {
@@ -150,7 +150,7 @@ export function CashflowForecast() {
           actual: lastActualValue,
           optimistic: lastActualValue,
           baseline:
-            ai_insights.revenue_forecast.last_month_projection.stagnancy || 0,
+            lastActualValue,
           pessimistic: lastActualValue,
           type: "transition",
         });
@@ -266,7 +266,7 @@ export function CashflowForecast() {
       <CardHeader>
         <CardTitle className="text-lg font-bold">Cashflow Forecast</CardTitle>
         <CardDescription>
-          Data actual dari database dan prediksi AI untuk 2 bulan ke depan
+          Actual data from database and AI prediction for 2 months ahead
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -413,7 +413,7 @@ export function CashflowForecast() {
           </div>
         </div>
         <p className="text-xs text-gray-500 mt-2">
-          * Prediksi berdasarkan analisis AI dari data historis penjualan
+          * Prediction based on AI analysis of historical sales data
         </p>
       </CardFooter>
     </Card>

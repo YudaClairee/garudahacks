@@ -18,7 +18,7 @@ export function SectionCards() {
 
   const fetchRevenueData = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/api/v1/revenue?months=1`);
+      const response = await fetch(`https://nabung-backend-931967398441.asia-southeast1.run.app/api/v1/revenue?months=1`);
       if (!response.ok) throw new Error('Failed to fetch revenue data');
       const data = await response.json();
       setTotalRevenue(data.total_revenue || 0);
@@ -31,7 +31,7 @@ export function SectionCards() {
   // SINGLE API CALL - ambil semua data dari AI analysis endpoint
   const fetchAllDashboardData = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/api/v1/dashboard/ai-analysis?location=Jakarta`);
+      const response = await fetch(`https://nabung-backend-931967398441.asia-southeast1.run.app/api/v1/dashboard/ai-analysis?location=Jakarta`);
       if (!response.ok) throw new Error('Failed to fetch dashboard data');
       
       const data = await response.json();

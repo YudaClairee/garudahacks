@@ -58,7 +58,7 @@ export function OpportunityTable() {
 
   const fetchOpportunityData = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/api/v1/dashboard/ai-analysis?location=Jakarta`);
+      const response = await fetch(`https://nabung-backend-931967398441.asia-southeast1.run.app/api/v1/dashboard/ai-analysis?location=Tangerang`);
       if (!response.ok) throw new Error('Failed to fetch opportunity data');
       const data = await response.json();
       setOpportunityData(data.ai_analysis.crowd_analysis.recommendation);

@@ -35,7 +35,7 @@ export default function HomePage() {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-2">
               <Image src={logo} alt="NABUNG Logo" width={50} height={50} />
-              <span className="text-xl font-bold text-gray-900">NABUNG</span>
+              <span className="text-xl font-bold text-gray-900">NABUNG.AI</span>
             </div>
             <div className="hidden md:flex items-center space-x-8">
               <a
@@ -83,9 +83,10 @@ export default function HomePage() {
               </span>
             </h1>
             <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-              NABUNG combines real-time sales analytics, inventory management,
-              and AI-powered insights to help small and medium businesses make
-              data-driven decisions and thrive in competitive markets.
+              NABUNG.AI combines real-time sales analytics, inventory
+              management, and AI-powered insights to help small and medium
+              businesses make data-driven decisions and thrive in competitive
+              markets.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" className="text-lg px-8">
@@ -112,11 +113,6 @@ export default function HomePage() {
               alt="NABUNG Dashboard Preview"
               className="w-full rounded-xl shadow-2xl border"
             />
-            {/* <img
-              src="/placeholder.svg?height=600&width=1200"
-              alt="NABUNG Dashboard Preview"
-              className="w-full rounded-xl shadow-2xl border"
-            /> */}
           </div>
         </div>
       </section>
@@ -364,7 +360,7 @@ export default function HomePage() {
             Ready to Transform Your Business?
           </h2>
           <p className="text-xl text-blue-100 mb-8">
-            Join thousands of businesses already using NABUNG to make smarter
+            Join thousands of businesses already using NABUNG.AI to make smarter
             decisions and drive growth.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -390,7 +386,7 @@ export default function HomePage() {
             <div>
               <div className="flex items-center space-x-2 mb-4">
                 <Image src={logo} alt="NABUNG Logo" width={50} height={50} />
-                <span className="text-xl font-bold">NABUNG</span>
+                <span className="text-xl font-bold">NABUNG.AI</span>
               </div>
               <p className="text-gray-400">
                 Smart analytics for modern businesses. Make data-driven
@@ -478,7 +474,7 @@ export default function HomePage() {
           </div>
 
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-            <p>&copy; 2025 NABUNG. All rights reserved.</p>
+            <p>&copy; 2025 NABUNG.AI. All rights reserved.</p>
           </div>
         </div>
       </footer>

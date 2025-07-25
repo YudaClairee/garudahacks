@@ -20,14 +20,6 @@ export default function ProdukPage() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // const handleFileSelect = (event) => {
-  //   const file = event.target.files[0];
-  //   if (file && file.type === 'text/csv') {
-  //     setSelectedFile(file);
-  //   } else {
-  //     alert('Please select a valid CSV file');
-  //   }
-  // };
   const handleFileSelect = (event) => {
     const file = event.target.files[0];
   
@@ -42,7 +34,7 @@ export default function ProdukPage() {
   const getItems = async () => {
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:8080/api/v1/items/get-all');
+      const response = await fetch('https://nabung-backend-931967398441.asia-southeast1.run.app/api/v1/items/get-all');
       
       if (response.ok) {
         const data = await response.json();
@@ -65,17 +57,6 @@ export default function ProdukPage() {
     getItems();
   }, []);
 
-  // const handleDrop = (event) => {
-  //   event.preventDefault();
-  //   setIsDragOver(false);
-    
-  //   const file = event.dataTransfer.files[0];
-  //   if (file && file.type === 'text/csv') {
-  //     setSelectedFile(file);
-  //   } else {
-  //     alert('Please drop a valid CSV file');
-  //   }
-  // };
   const handleDrop = (event) => {
     event.preventDefault();
     setIsDragOver(false);
@@ -105,7 +86,7 @@ export default function ProdukPage() {
       formData.append('csv_file', selectedFile); // Ganti dari 'file' ke 'csv_file'
 
       try {
-        const response = await fetch('http://localhost:8080/api/v1/items/upload-csv', {
+        const response = await fetch('https://nabung-backend-931967398441.asia-southeast1.run.app/api/v1/items/upload-csv', {
           method: 'POST',
           body: formData,
         });
@@ -218,19 +199,6 @@ export default function ProdukPage() {
                       </div>
                     )}
                   </div>
-
-                  {/* CSV Format Info */}
-                  {/* <div className="bg-blue-50 p-4 rounded-lg">
-                    <h4 className="font-medium text-blue-900 mb-2">Format CSV yang dibutuhkan:</h4>
-                    <div className="text-sm text-blue-800 space-y-1">
-                      <p><code className="bg-blue-100 px-1 rounded">nama,kategori,harga,stok</code></p>
-                      <p>Contoh:</p>
-                      <code className="bg-blue-100 px-2 py-1 rounded block text-xs">
-                        Nasi Gudeg,Makanan Utama,25000,150<br/>
-                        Sate Ayam,Makanan Utama,30000,89
-                      </code>
-                    </div>
-                  </div> */}
                 </div>
 
                 <DialogFooter className="flex gap-3">
