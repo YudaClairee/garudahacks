@@ -240,7 +240,7 @@ func (h *DashboardAIHandler) getAIAnalysis(content string) (*AIAnalysisResponse,
 
 Your task:
 
-    Generate a short (2–3 lines) recommendation based on the 5 best-selling items.
+    Generate a short (2-3 lines) recommendation based on the 5 best-selling items.
 
     Forecast next month's sales using the YTD sales trend.
 
@@ -251,12 +251,12 @@ Your task:
 Respond only with a JSON output in the following format:
 
 {
-  "top_sellers_recommendation": "string (2–3 lines)",
+  "top_sellers_recommendation": "string (2-3 lines)",
   "sales_forecast_next_month": number,
-  "revenue_insights": "string (max 3–4 lines)",
+  "revenue_insights": "string (max 3-4 lines)",
   "crowd_analysis": {
     "estimated_crowds": number,
-    "recommendation": "string (1–2 lines)"
+    "recommendation": "string (1-2 lines)"
   }
 }
 
