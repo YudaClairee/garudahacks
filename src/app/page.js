@@ -73,7 +73,7 @@ export default function HomePage() {
       <section className="relative py-20 lg:py-32">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <Badge variant="default" className="mb-4">
+            <Badge variant="default" className="mb-4 px-4 py-2 rounded-lg">
               <Zap className="w-4 h-4 mr-1" />
               AI-Powered Business Intelligence
             </Badge>
