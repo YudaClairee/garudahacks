@@ -284,13 +284,12 @@ export default function DataPenjualanPage() {
         
         <div className="rounded-lg border overflow-hidden overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-indigo-50 dark:bg-indigo-950/20">
+            <thead className="bg-indigo-50 dark:bg-zinc-600">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">Order ID</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">Items</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">Total</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">Tanggal</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">Aksi</th>
+                <th className="px-6 py-3 text-left text-xs font-semibold uppercase">Order ID</th>
+                <th className="px-6 py-3 text-left text-xs font-semibold uppercase">Items</th>
+                <th className="px-6 py-3 text-left text-xs font-semibold uppercase">Total</th>
+                <th className="px-6 py-3 text-left text-xs font-semibold uppercase">Tanggal</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
@@ -337,10 +336,6 @@ export default function DataPenjualanPage() {
                     </td>
                     <td className="px-6 py-4 text-sm text-muted-foreground">
                       {formatDate(order.completed_at)}
-                    </td>
-                    <td className="px-6 py-4 text-sm">
-                      <button className="text-indigo-600 hover:text-indigo-900 mr-3">Detail</button>
-                      <button className="text-red-600 hover:text-red-900">Hapus</button>
                     </td>
                   </tr>
                 ))

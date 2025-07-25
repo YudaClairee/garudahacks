@@ -117,8 +117,8 @@ export default function ProdukPage() {
   return (
     <div className="space-y-6">
       <div className="px-4 lg:px-6">
-        <h1 className="text-2xl font-bold text-gray-900">Manajemen Produk</h1>
-        <p className="text-gray-600 mt-2">Kelola produk dan inventory kamu</p>
+        <h1 className="text-2xl font-bold">Manajemen Produk</h1>
+        <p className=" mt-2">Kelola produk dan inventory kamu</p>
       </div>
       
       <div className="px-4 lg:px-6">
@@ -129,7 +129,7 @@ export default function ProdukPage() {
             {/* Import CSV Dialog */}
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
-                <Button className="border bg-indigo-100 border-indigo-600 text-indigo-600 px-4 py-2 rounded-lg hover:bg-indigo-600 hover:text-white transition-colors">
+                <Button className="border bg-indigo-100 dark:bg-indigo-950/20 border-indigo-600 text-indigo-600 px-4 py-2 rounded-lg hover:bg-indigo-600 hover:text-white transition-colors">
                   Import CSV
                 </Button>
               </DialogTrigger>
@@ -219,7 +219,7 @@ export default function ProdukPage() {
               </DialogContent>
             </Dialog>
             
-            <Button className="border bg-indigo-100 border-indigo-600 text-indigo-600 px-4 py-2 rounded-lg hover:bg-indigo-600 hover:text-white transition-colors">
+            <Button className="border bg-indigo-100 dark:bg-indigo-950/20 border-indigo-600 text-indigo-600 px-4 py-2 rounded-lg hover:bg-indigo-600 hover:text-white transition-colors">
               Input from Your POS
             </Button>
           </div>
@@ -227,13 +227,12 @@ export default function ProdukPage() {
         
         <div className="rounded-lg border border-gray-200 overflow-hidden overflow-x-auto ">
           <table className="w-full">
-            <thead className="bg-indigo-50 dark:bg-indigo-950/20">
+            <thead className="bg-indigo-50 dark:bg-zinc-600">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Produk</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Harga</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Stok</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Harga Produksi</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Aksi</th>
+                <th className="px-6 py-3 text-left text-xs font-semibold uppercase">Produk</th>
+                <th className="px-6 py-3 text-left text-xs font-semibold uppercase">Harga</th>
+                <th className="px-6 py-3 text-left text-xs font-semibold uppercase">Stok</th>
+                <th className="px-6 py-3 text-left text-xs font-semibold uppercase">Harga Produksi</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
@@ -268,10 +267,7 @@ export default function ProdukPage() {
                     <td className="px-6 py-4 text-sm">
                       Rp {item.production_price.toLocaleString('id-ID')}
                     </td>
-                    <td className="px-6 py-4 text-sm">
-                      <button className="text-indigo-600 hover:text-indigo-900 mr-3">Edit</button>
-                      <button className="text-red-600 hover:text-red-900">Hapus</button>
-                    </td>
+                    
                   </tr>
                 ))
               )}

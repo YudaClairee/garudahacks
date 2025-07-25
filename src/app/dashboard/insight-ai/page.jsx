@@ -38,7 +38,7 @@ export default function InsightAiPage() {
   return (
     <div className="space-y-6">
       <div className="px-4 lg:px-6">
-        <h1 className="text-2xl font-bold text-gray-900">Insight AI</h1>
+        <h1 className="text-2xl font-bold">Insight AI</h1>
       </div>
 
       <div className="px-4 lg:px-6">
@@ -51,26 +51,26 @@ export default function InsightAiPage() {
           <div className="col-span-1 md:col-span-1 lg:col-span-1 flex flex-col gap-10 border border-gray-200 rounded-lg p-6">
             {/* Cashflow Analysis - Data from API */}
             <div className="flex flex-col gap-4">
-              <h2 className="text-2xl font-bold text-gray-900">Cashflow Analysis</h2>
+              <h2 className="text-2xl font-bold">Cashflow Analysis</h2>
               <div className="flex flex-col gap-4">
                 {loading ? (
                   <p className="text-gray-500">Loading data...</p>
                 ) : insightData ? (
                   <>
                     <div className="flex justify-between items-center">
-                      <h3 className="text-xl font-semibold text-gray-700">Revenue</h3>
-                      <p className="text-lg font-medium text-gray-700">
+                      <h3 className="text-xl font-semibold">Revenue</h3>
+                      <p className="text-lg font-medium">
                         {formatCurrency(insightData.total_revenue)}
                       </p>
                     </div>
                     <div className="flex justify-between items-center">
-                      <h3 className="text-xl font-semibold text-gray-700">Profit</h3>
+                      <h3 className="text-xl font-semibold">Profit</h3>
                       <p className="text-lg font-medium text-green-600">
                         {formatCurrency(insightData.total_profit)}
                       </p>
                     </div>
                     <div className="flex justify-between items-center">
-                      <h3 className="text-xl font-semibold text-gray-700">Expenses</h3>
+                      <h3 className="text-xl font-semibold">Expenses</h3>
                       <p className="text-lg font-medium text-red-600">
                         {formatCurrency(insightData.total_expenses)}
                       </p>
@@ -84,7 +84,7 @@ export default function InsightAiPage() {
 
             {/* AI Tips - Data from API */}
             <div className="flex flex-col gap-4 text-center bg-indigo-100 rounded-lg p-6">
-              <h2 className="text-2xl font-bold text-gray-900">AI Tips</h2>
+              <h2 className="text-2xl font-bold dark:text-black">AI Tips</h2>
               {loading ? (
                 <p className="text-gray-500">Loading tips...</p>
               ) : insightData?.ai_insights?.financial_tips ? (
