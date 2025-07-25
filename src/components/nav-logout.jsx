@@ -10,6 +10,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
+import Link from "next/link"
 
 export function NavLogout() {
   const { isMobile } = useSidebar()
@@ -17,9 +18,11 @@ export function NavLogout() {
   return (
     <SidebarMenu>
       <SidebarMenuItem>
-        <SidebarMenuButton className="gap-2">
-          <IconLogout className="size-8" />
+        <SidebarMenuButton>
+          <Link href="/" className="gap-2 text-red-500 hover:text-red-600 hover:bg-red-500/10 rounded-lg p-2 w-full flex items-center transition-colors">
+          <IconLogout className="size-6" />
           <span className="text-lg ">Keluar</span>
+          </Link>
         </SidebarMenuButton>
       </SidebarMenuItem>
     </SidebarMenu>

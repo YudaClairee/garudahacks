@@ -255,21 +255,11 @@ export default function ProdukPage() {
               Input from Your POS
             </Button>
           </div>
-          <div className="flex gap-2">
-            <input 
-              type="search" 
-              placeholder="Cari produk..." 
-              className="border border-gray-300 px-3 py-2 rounded-lg w-64"
-            />
-            <Button className="border border-gray-300 px-3 py-2 rounded-lg hover:bg-gray-50">
-              Filter
-            </Button>
-          </div>
         </div>
         
-        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+        <div className="rounded-lg border border-gray-200 overflow-hidden overflow-x-auto ">
           <table className="w-full">
-            <thead className="bg-gray-50">
+            <thead className="bg-indigo-50 dark:bg-indigo-950/20">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Produk</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Harga</th>
@@ -303,11 +293,11 @@ export default function ProdukPage() {
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-900">
+                    <td className="px-6 py-4 text-sm ">
                       Rp {item.price.toLocaleString('id-ID')}
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-900">{item.stock}</td>
-                    <td className="px-6 py-4 text-sm text-gray-900">
+                    <td className="px-6 py-4 text-sm">{item.stock}</td>
+                    <td className="px-6 py-4 text-sm">
                       Rp {item.production_price.toLocaleString('id-ID')}
                     </td>
                     <td className="px-6 py-4 text-sm">

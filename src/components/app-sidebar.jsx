@@ -16,6 +16,9 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import { PiggyBank } from "lucide-react"
+import Image from "next/image"
+import logo from "/public/nabunglogo.png"
+import Link from "next/link"
 
 const data = {
   user: {
@@ -34,10 +37,10 @@ export function AppSidebar({
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild className="data-[slot=sidebar-menu-button]:!p-1.5">
-              <a href="/dashboard">
-                <PiggyBank className="!size-10" />
+              <Link href="/dashboard">
+                <Image src={logo} alt="NABUNG Logo" width={50} height={50} />
                 <span className="text-base font-semibold">NABUNG</span>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
