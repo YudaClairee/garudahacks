@@ -130,7 +130,7 @@ export default function ProdukPage() {
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
                 <Button className="border bg-indigo-100 dark:bg-indigo-950/20 border-indigo-600 text-indigo-600 px-4 py-2 rounded-lg hover:bg-indigo-600 hover:text-white transition-colors">
-                  Import CSV
+                  Input CSV
                 </Button>
               </DialogTrigger>
               <DialogContent className="sm:max-w-md">
@@ -220,7 +220,7 @@ export default function ProdukPage() {
             </Dialog>
             
             <Button className="border bg-indigo-100 dark:bg-indigo-950/20 border-indigo-600 text-indigo-600 px-4 py-2 rounded-lg hover:bg-indigo-600 hover:text-white transition-colors">
-              Input from Your POS
+              InputYour POS
             </Button>
           </div>
         </div>
